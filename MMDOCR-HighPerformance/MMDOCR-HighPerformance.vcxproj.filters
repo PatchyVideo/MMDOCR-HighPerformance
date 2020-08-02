@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="CUDAWrappers">
+      <UniqueIdentifier>{b494226d-d1a3-470a-8fbf-ae6bf9fd015f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Operations">
+      <UniqueIdentifier>{450cb198-7a69-46fd-a4dc-cdf68ece4a2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NvCodecs">
+      <UniqueIdentifier>{58e81f21-251a-424d-a551-68a3cd16e27b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{ca31b134-1187-4c70-9a1a-74c8b627a0af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External">
+      <UniqueIdentifier>{1f4ce2f8-65f7-459a-a476-983aebcf1f45}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CUDAContext.h">
+      <Filter>CUDAWrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="CUDADeviceMemory.h">
+      <Filter>CUDAWrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="CUDAHostMemory.h">
+      <Filter>CUDAWrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="CUDAStream.h">
+      <Filter>CUDAWrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="FPSCounter.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="lodepng.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="NvCodecs\Utils\ColorSpace.h">
+      <Filter>NvCodecs</Filter>
+    </ClInclude>
+    <ClInclude Include="NvCodecs\Utils\FFmpegDemuxer.h">
+      <Filter>NvCodecs</Filter>
+    </ClInclude>
+    <ClInclude Include="NvCodecs\Utils\FFmpegStreamer.h">
+      <Filter>NvCodecs</Filter>
+    </ClInclude>
+    <ClInclude Include="NvCodecs\Utils\Logger.h">
+      <Filter>NvCodecs</Filter>
+    </ClInclude>
+    <ClInclude Include="NvCodecs\Utils\NvCodecUtils.h">
+      <Filter>NvCodecs</Filter>
+    </ClInclude>
+    <ClInclude Include="NvCodecs\Utils\NvEncoderCLIOptions.h">
+      <Filter>NvCodecs</Filter>
+    </ClInclude>
+    <ClInclude Include="NvCodecs\NvDecoder\NvDecoder.h">
+      <Filter>NvCodecs</Filter>
+    </ClInclude>
+    <ClInclude Include="PreprocessNV12.h">
+      <Filter>Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="common.h" />
+    <ClInclude Include="ExtractChangedFrames.h">
+      <Filter>Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="RgbBytesToRgbFp32.h">
+      <Filter>Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="CRAFT.h">
+      <Filter>Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="NvInferRuntime.h">
+      <Filter>CUDAWrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="ExtractTextRegions.h">
+      <Filter>Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="BBoxUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="CompareTextRegions.h">
+      <Filter>Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="OCR.h">
+      <Filter>Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="ExtractContiguousTextRegions.h">
+      <Filter>Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="CTCDecoder.h" />
+    <ClInclude Include="utf_utils.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="SubtitleGenerator.h" />
+    <ClInclude Include="NvInferEngine.h">
+      <Filter>CUDAWrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="NvInferContext.h">
+      <Filter>CUDAWrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="CUDAThreadContext.h">
+      <Filter>CUDAWrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="CUDAEvent.h">
+      <Filter>CUDAWrappers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="lodepng.cpp">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="NvCodecs\NvDecoder\NvDecoder.cpp">
+      <Filter>NvCodecs</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cc" />
+    <ClCompile Include="common.cc" />
+    <ClCompile Include="CTCDecoder.cpp" />
+    <ClCompile Include="utf_utils.cc">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="SubtitleGenerator.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="NvCodecs\Utils\BitDepth.cu">
+      <Filter>NvCodecs</Filter>
+    </CudaCompile>
+    <CudaCompile Include="NvCodecs\Utils\ColorSpace.cu">
+      <Filter>NvCodecs</Filter>
+    </CudaCompile>
+    <CudaCompile Include="NvCodecs\Utils\crc.cu">
+      <Filter>NvCodecs</Filter>
+    </CudaCompile>
+    <CudaCompile Include="NvCodecs\Utils\Resize.cu">
+      <Filter>NvCodecs</Filter>
+    </CudaCompile>
+    <CudaCompile Include="PreprocessNV12.cu">
+      <Filter>Operations</Filter>
+    </CudaCompile>
+    <CudaCompile Include="ExtractChangedFrames.cu">
+      <Filter>Operations</Filter>
+    </CudaCompile>
+    <CudaCompile Include="RgbBytesToRgbFp32.cu">
+      <Filter>Operations</Filter>
+    </CudaCompile>
+    <CudaCompile Include="ExtractTextRegions.cu">
+      <Filter>Operations</Filter>
+    </CudaCompile>
+    <CudaCompile Include="CRAFT.cu">
+      <Filter>Operations</Filter>
+    </CudaCompile>
+    <CudaCompile Include="CompareTextRegions.cu">
+      <Filter>Operations</Filter>
+    </CudaCompile>
+    <CudaCompile Include="OCR.cu">
+      <Filter>Operations</Filter>
+    </CudaCompile>
+    <CudaCompile Include="ExtractContiguousTextRegions.cu">
+      <Filter>Operations</Filter>
+    </CudaCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
+  </ItemGroup>
+</Project>

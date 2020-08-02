@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BBoxUtils.h" />
+    <ClInclude Include="common.h" />
+    <ClInclude Include="CompareTextRegions.h" />
+    <ClInclude Include="CRAFT.h" />
+    <ClInclude Include="CTCDecoder.h" />
+    <ClInclude Include="CUDAContext.h" />
+    <ClInclude Include="CUDADeviceMemory.h" />
+    <ClInclude Include="CUDAEvent.h" />
+    <ClInclude Include="CUDAHostMemory.h" />
+    <ClInclude Include="CUDAStream.h" />
+    <ClInclude Include="CUDAThreadContext.h" />
+    <ClInclude Include="ExtractChangedFrames.h" />
+    <ClInclude Include="ExtractContiguousTextRegions.h" />
+    <ClInclude Include="ExtractTextRegions.h" />
+    <ClInclude Include="FPSCounter.h" />
+    <ClInclude Include="lodepng.h" />
+    <ClInclude Include="NvCodecs\NvDecoder\NvDecoder.h" />
+    <ClInclude Include="NvCodecs\Utils\ColorSpace.h" />
+    <ClInclude Include="NvCodecs\Utils\FFmpegDemuxer.h" />
+    <ClInclude Include="NvCodecs\Utils\FFmpegStreamer.h" />
+    <ClInclude Include="NvCodecs\Utils\Logger.h" />
+    <ClInclude Include="NvCodecs\Utils\NvCodecUtils.h" />
+    <ClInclude Include="NvCodecs\Utils\NvEncoderCLIOptions.h" />
+    <ClInclude Include="NvInferContext.h" />
+    <ClInclude Include="NvInferEngine.h" />
+    <ClInclude Include="NvInferRuntime.h" />
+    <ClInclude Include="OCR.h" />
+    <ClInclude Include="PreprocessNV12.h" />
+    <ClInclude Include="RgbBytesToRgbFp32.h" />
+    <ClInclude Include="SubtitleGenerator.h" />
+    <ClInclude Include="utf_utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SubtitleGenerator.cc" />
+    <ClCompile Include="utf_utils.cc" />
+    <CudaCompile Include="CompareTextRegions.cu" />
+    <CudaCompile Include="CRAFT.cu">
+      <FileType>Document</FileType>
+    </CudaCompile>
+    <ClCompile Include="common.cc" />
+    <ClCompile Include="CTCDecoder.cpp" />
+    <ClCompile Include="lodepng.cpp" />
+    <ClCompile Include="main.cc" />
+    <ClCompile Include="NvCodecs\NvDecoder\NvDecoder.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="ExtractChangedFrames.cu" />
+    <CudaCompile Include="ExtractContiguousTextRegions.cu" />
+    <CudaCompile Include="ExtractTextRegions.cu" />
+    <CudaCompile Include="NvCodecs\Utils\BitDepth.cu" />
+    <CudaCompile Include="NvCodecs\Utils\ColorSpace.cu" />
+    <CudaCompile Include="NvCodecs\Utils\crc.cu" />
+    <CudaCompile Include="NvCodecs\Utils\Resize.cu" />
+    <CudaCompile Include="OCR.cu" />
+    <CudaCompile Include="PreprocessNV12.cu" />
+    <CudaCompile Include="RgbBytesToRgbFp32.cu" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{686E6A4F-B50C-4A15-AA9E-33B581D510BD}</ProjectGuid>
+    <RootNamespace>MMDOCR_HighPerformance</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.0.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>TensorRT\include;OpenCV\include;FFmpeg\include;$(IncludePath)</IncludePath>
+    <LibraryPath>TensorRT\lib;OpenCV\x64\vc16\lib;FFmpeg\lib\x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>TensorRT\include;OpenCV\include;FFmpeg\include;$(IncludePath)</IncludePath>
+    <LibraryPath>TensorRT\lib;OpenCV\x64\vc16\lib;FFmpeg\lib\x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>myelin64_1.lib;nvinfer.lib;nvinfer_plugin.lib;nvonnxparser.lib;nvparsers.lib;cudart_static.lib;opencv_world440d.lib;nvcuvid.lib;cuda.lib;avformat.lib;avutil.lib;avcodec.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <CudaCompile>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+      <CodeGeneration>compute_61,sm_61</CodeGeneration>
+      <AdditionalOptions>-std=c++17 %(AdditionalOptions)</AdditionalOptions>
+    </CudaCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FloatingPointModel>Fast</FloatingPointModel>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>myelin64_1.lib;nvinfer.lib;nvinfer_plugin.lib;nvonnxparser.lib;nvparsers.lib;cudart_static.lib;opencv_world440.lib;nvcuvid.lib;cuda.lib;avformat.lib;avutil.lib;avcodec.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <CudaCompile>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+      <CodeGeneration>compute_61,sm_61</CodeGeneration>
+      <Optimization>O3</Optimization>
+      <FastMath>false</FastMath>
+      <AdditionalOptions>-std=c++17 %(AdditionalOptions)</AdditionalOptions>
+    </CudaCompile>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.0.targets" />
+  </ImportGroup>
+</Project>
