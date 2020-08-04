@@ -326,7 +326,7 @@ struct WorkerThread
 	WorkerThread(WorkerThread&& a) = delete;
 	WorkerThread& operator=(WorkerThread&& a) = delete;
 
-	void mainloop()
+	void mainloop() try
 	{
 		cudawrapper::NvInferEngine craft_engine(LoadEngineFromFile("detect.trt", trt_runtime));
 		cudawrapper::NvInferEngine ocr_engine(LoadEngineFromFile("ocr.trt", trt_runtime));
@@ -734,6 +734,8 @@ struct WorkerThread
 								{
 									// bug
 									assert(false);
+									std::cerr << "if (col_assignments[i] != -1 && col_assignments[i] < last_frame_texts.size())\n";
+									std::terminate();
 								}
 							}
 						}
@@ -748,6 +750,10 @@ struct WorkerThread
 				}
 			}
 		}
+	} catch (std::exception const& e)
+	{
+		std::cerr << e.what() << "\n";
+		SetState(ThreadState::Error);
 	}
 };
 
@@ -755,8 +761,13 @@ std::size_t const NUM_THREADS = 1;
 std::size_t const DECODE_BUFFER_SIZE = 1;
 std::size_t const DECODE_BATCH_SIZE = 256;
 
-int main()
+int main(int argc, char **argv)
 {
+	if (argc != 3)
+		return 1;
+
+	std::string vidfile(argv[1]), srtfile(argv[2]);
+
 	ck2(cuInit(0));
 	cudawrapper::CUDAContext context(0, 0);
 
@@ -770,7 +781,7 @@ int main()
 	//return 0;
 
 	SubtitleGenerator sub_gen;
-	FFmpegDemuxer demuxer("sanae.mp4");
+	FFmpegDemuxer demuxer(vidfile.c_str());
 	std::cout << "Video width: " << demuxer.GetWidth() << " height: " << demuxer.GetHeight() << " duration(us): " << demuxer.GetDuration() << " frame count: " << demuxer.GetFrameCount() << " FPS: " << demuxer.GetFPS() << "\n";
 
 	NvDecoder dec(context, true, FFmpeg2NvCodecId(demuxer.GetVideoCodec()));
@@ -795,10 +806,16 @@ int main()
 				std::lock_guard<std::mutex> guard(g_mutex);
 				for (auto& w : workers)
 				{
-					if (w.Poll() == WorkerThread::ThreadState::Idle)
+					auto state(w.Poll());
+					if (state == WorkerThread::ThreadState::Idle)
 					{
 						found = true;
 						t = std::addressof(w);
+					}
+					else if (state == WorkerThread::ThreadState::Error)
+					{
+						std::cerr << "worker failed\n";
+						std::terminate();
 					}
 				}
 			}
@@ -1005,7 +1022,7 @@ int main()
 	std::cout << "total frames: " << nFrame << "\n";
 
 	// generate subtitle
-	sub_gen.Generate("sanae.srt");
+	sub_gen.Generate(srtfile);
 
 	return 0;
 }
