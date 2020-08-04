@@ -26,19 +26,19 @@ def perform_ocr(video_filename, srt_filename) :
     # placeholder
     print('Processing file %s'%video_filename)
 
-    time.sleep(10)
-    with open(srt_filename, 'w') as fp :
-        fp.write('Subtitle file=%s,video file=%s'%(srt_filename,video_filename))
-    return True
-
-    # process = Popen('MMDOCR-HighPerformance.exe %s %s' % (video_filename, srt_filename), shell=True, stderr=STDOUT, stdout=subprocess.PIPE, close_fds=True)
-    # process.wait()
-    # process_output, _ =  process.communicate()
-    # with open('ocr.log', 'w+') as fp :
-    #     fp.write('%s\n' % datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
-    #     fp.write(process_output.decode('utf-8'))
-    #     fp.write('\n')
-    # return process.returncode == 0
+    # time.sleep(10)
+    # with open(srt_filename, 'w') as fp :
+    #     fp.write('Subtitle file=%s,video file=%s'%(srt_filename,video_filename))
+    # return True
+    await asyncio.sleep(0) # yield
+    process = Popen('MMDOCR-HighPerformance.exe %s %s' % (video_filename, srt_filename), shell=True, stderr=STDOUT, stdout=subprocess.PIPE, close_fds=True)
+    process.wait()
+    process_output, _ =  process.communicate()
+    with open('ocr.log', 'w+') as fp :
+        fp.write('%s\n' % datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
+        fp.write(process_output.decode('utf-8'))
+        fp.write('\n')
+    return process.returncode == 0
 
 async def retrive_queue(max_videos = 20) :
     async with aiohttp.ClientSession() as session :
