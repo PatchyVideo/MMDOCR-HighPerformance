@@ -79,8 +79,8 @@ void CRAFT(
 	{
 		// step 1: convert to fp32
 		RgbBytesToRgbFp32(reinterpret_cast<std::uint8_t*>(in_frames.at_offset(batch_size * 3 * width * height, i)), tmp_fp32_frames, batch_size, width, height, stream);
-		if (stream)
-			cuStreamSynchronize(stream);
+		//if (stream)
+		//	cuStreamSynchronize(stream);
 		// step 2: run CRAFT inference
 		std::vector<void*> bindings{ tmp_fp32_frames, reinterpret_cast<float*>(tmp_scores.at_offset(batch_size * 2 * score_width * score_height, i)) };
 		

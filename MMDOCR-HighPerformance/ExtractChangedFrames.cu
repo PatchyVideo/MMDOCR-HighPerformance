@@ -196,10 +196,6 @@ void ExtractChangedFrames(
 	ExtractChangedFrames_stage_2_kernel<<<stage2_grid, stage2_block, 0, stream>>>(tmp_intermediate_results, out_absdiffs, frame_height * reduced_frame_width);
 	ck2(cudaGetLastError());
 
-	// wait for result
-	if (stream)
-		ck2(cuStreamSynchronize(stream));
-
 	// copy back absdiffs
 	out_absdiffs.download_block(out_absdiffs_host, stream);
 	// keep frames whose absdiff>threshold

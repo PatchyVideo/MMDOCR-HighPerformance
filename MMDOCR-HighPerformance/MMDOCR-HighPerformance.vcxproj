@@ -124,7 +124,7 @@
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
-      <CodeGeneration>compute_61,sm_61</CodeGeneration>
+      <CodeGeneration>compute_61,sm_61;compute_75,sm_75</CodeGeneration>
       <AdditionalOptions>-std=c++17 %(AdditionalOptions)</AdditionalOptions>
     </CudaCompile>
   </ItemDefinitionGroup>
@@ -149,7 +149,7 @@
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
-      <CodeGeneration>compute_61,sm_61</CodeGeneration>
+      <CodeGeneration>compute_61,sm_61;compute_75,sm_75</CodeGeneration>
       <Optimization>O3</Optimization>
       <FastMath>false</FastMath>
       <AdditionalOptions>-std=c++17 %(AdditionalOptions)</AdditionalOptions>

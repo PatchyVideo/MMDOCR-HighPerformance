@@ -125,6 +125,7 @@ std::vector<std::u32string> CTCDecode(cudawrapper::CUDAHostMemoryUnique<std::int
 		for (std::size_t j(1); j < image_width; ++j)
 		{
 			std::int32_t char_index(ocr_result.at_offset(image_width, i)[j]);
+			//cur_string.append(1, char_index!=0?g_alphabet[char_index]:' '); continue;
 			t[j] = char_index;
 			if (char_index != 0 && char_index != t[j - 1])
 			{

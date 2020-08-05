@@ -149,10 +149,6 @@ void CompareTextRegions(
 	CompareTextRegions_stage_2_kernel<<<stage2_grid, stage2_block, 0, stream>>>(tmp_intermediate_results, tmp_comparsion_result_gpu, reduced_region_width * region_height);
 	ck2(cudaGetLastError());
 
-	// wait for result
-	if (stream)
-		ck2(cuStreamSynchronize(stream));
-
 	// copy back absdiffs
 	tmp_comparsion_result_gpu.download_block(out_comparsion_result, stream);
 }

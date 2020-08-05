@@ -24,8 +24,8 @@ void OCR(
 	{
 		// step 1: convert to fp32
 		RgbBytesToRgbFp32(reinterpret_cast<std::uint8_t*>(in_text_regions.at_offset(batch_size * 3 * width * height, i)), tmp_fp32_frames, batch_size, width, height, stream);
-		if (stream)
-			cuStreamSynchronize(stream);
+		//if (stream)
+		//	cuStreamSynchronize(stream);
 		// step 2: run OCR inference
 		std::vector<void*> bindings{ tmp_fp32_frames, reinterpret_cast<std::int32_t*>(tmp_text_indices_gpu.at_offset(batch_size * num_text_idx_per_region, i)) };
 
