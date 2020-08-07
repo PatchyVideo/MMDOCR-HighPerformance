@@ -11,9 +11,10 @@ from subprocess import Popen, PIPE, STDOUT
 from datetime import datetime
 from contextlib import closing
 
-SESSION_ID = 'eyJfcGVybWFuZW50Ijp0cnVlLCJzaWQiOiIzNjJjZDVhNGMwZGE3YzEyZGY2M2RhNGZkNjIyNWE4MCJ9.Xyh4aQ.UDtAOPpBULwJUcyHIVW-CSxCNY8'
-WORKER_ID = 'ae4re4tg'
+SESSION_ID = 'eyJfcGVybWFuZW50Ijp0cnVlLCJzaWQiOiI5OWM2NmJkZTA3MjhmMGE1YTg4NTVkNmI1NzE1MGIzZSJ9.Xy1llA.Jg6aGc9q04pZPZ6vFFd1hY3G4Gg'
+WORKER_ID = 'ae4re4tgr25UERqEt1Ac80Uq'
 BACKEND_URL = 'http://192.168.0.54'
+VERSION = 2
 
 RESERVED_VIDEOS = []
 
@@ -21,7 +22,7 @@ def get_random_string(length) :
     letters = string.ascii_lowercase
     return ''.join(random.choice(letters) for i in range(length))
 
-def perform_ocr(video_filename, srt_filename) :
+async def perform_ocr(video_filename, srt_filename) :
     # this is a blocking call, only one process runs at a time
     # placeholder
     print('Processing file %s'%video_filename)
@@ -34,7 +35,7 @@ def perform_ocr(video_filename, srt_filename) :
     process = Popen('MMDOCR-HighPerformance.exe %s %s' % (video_filename, srt_filename), shell=True, stderr=STDOUT, stdout=subprocess.PIPE, close_fds=True)
     process.wait()
     process_output, _ =  process.communicate()
-    with open('ocr.log', 'w+') as fp :
+    with open('ocr.log', 'a+') as fp :
         fp.write('%s\n' % datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
         fp.write(process_output.decode('utf-8'))
         fp.write('\n')
@@ -80,8 +81,18 @@ class TempFile(object) :
         return self
 
     def __exit__(self, type, value, traceback) :
-        os.remove(self.vfilename)
-        os.remove(self.sfilename)
+        try :
+            os.remove(self.vfilename)
+            os.remove(self.sfilename)
+        except :
+            pass
+
+def get_suitable_resolution(streams) :
+    best = streams[0]['src'][0]
+    for s in streams :
+        if s['quality'].split('p')[0] == '360' :
+            best = s['src'][0]
+    return best
 
 async def process_single_video(unique_id, url) :
     try_count = 0
@@ -100,6 +111,11 @@ async def process_single_video(unique_id, url) :
                     resp_json = await resp.json()
                     if resp_json['status'] == 'SUCCEED' :
                         video_url = resp_json['data'][0]['src'][0]
+                        try :
+                            best_url = get_suitable_resolution(resp_json['data'])
+                            video_url = best_url
+                        except :
+                            pass
                         print('[+] video url = %s'%video_url)
                     else :
                         raise Exception(repr(resp_json))
@@ -125,7 +141,7 @@ async def process_single_video(unique_id, url) :
                         cookies = {'session': SESSION_ID}
                         ) as resp :
                         pass
-                    if not perform_ocr(tmp_file.vfilename, tmp_file.sfilename) :
+                    if not await perform_ocr(tmp_file.vfilename, tmp_file.sfilename) :
                         raise Exception('OCR failed')
                     print('[+] Uploading subtitle for %s' % url)
                     with open(tmp_file.sfilename, 'r') as fp :
@@ -134,7 +150,7 @@ async def process_single_video(unique_id, url) :
                         print('[+] Subtitle size = %d' % len(content.encode('utf-8')))
                         async with session.post(
                             BACKEND_URL + '/be/subtitles/worker/post_ocr_result.do',
-                            json = {'unique_id': unique_id, 'content': content, 'format': 'srt', 'version': 1, 'worker_id': WORKER_ID},
+                            json = {'unique_id': unique_id, 'content': content, 'format': 'vtt', 'version': VERSION, 'worker_id': WORKER_ID},
                             cookies = {'session': SESSION_ID}
                             ) as resp :
                             resp_json = await resp.json()
@@ -174,7 +190,7 @@ async def main() :
             print('[+] Retrived %d jobs' % len(urls))
             got_jobs = True
         if not urls :
-            await asyncio.sleep(1)
+            await asyncio.sleep(10)
             got_jobs = False
             continue
         tasks = []
