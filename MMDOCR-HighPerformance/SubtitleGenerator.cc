@@ -230,6 +230,7 @@ void SubtitleGenerator::Generate(std::string_view output_filename)
 	auto result(MergeSubtitleSegments(filtered_stage2, levenshtein_threshold));
 
 	std::ofstream ofs(output_filename.data());
+	ofs << "WEBVTT\n\n";
 
 	std::size_t text_counter(1);
 	for (auto const &seg : result)
