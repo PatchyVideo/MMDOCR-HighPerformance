@@ -11,9 +11,9 @@ from subprocess import Popen, PIPE, STDOUT
 from datetime import datetime
 from contextlib import closing
 
-SESSION_ID = 'eyJfcGVybWFuZW50Ijp0cnVlLCJzaWQiOiI5OWM2NmJkZTA3MjhmMGE1YTg4NTVkNmI1NzE1MGIzZSJ9.Xy1llA.Jg6aGc9q04pZPZ6vFFd1hY3G4Gg'
+SESSION_ID = 'eyJfcGVybWFuZW50Ijp0cnVlLCJzaWQiOnsiIGIiOiJNV0UxTjJabVlqQXlPV1ZsWlRsak5qY3dPVGs1TVRjMU9XTmpaakkyWTJZPSJ9fQ.Xy4TGQ.P2WH6csZ789j-uKatimxlbqG2C8'
 WORKER_ID = 'ae4re4tgr25UERqEt1Ac80Uq'
-BACKEND_URL = 'http://192.168.0.54'
+BACKEND_URL = 'https://thvideo.tv'
 VERSION = 2
 
 RESERVED_VIDEOS = []
@@ -110,7 +110,7 @@ async def process_single_video(unique_id, url) :
                     ) as resp :
                     resp_json = await resp.json()
                     if resp_json['status'] == 'SUCCEED' :
-                        video_url = resp_json['data'][0]['src'][0]
+                        video_url = resp_json['data']['streams'][0]['src'][0]
                         try :
                             best_url = get_suitable_resolution(resp_json['data'])
                             video_url = best_url
