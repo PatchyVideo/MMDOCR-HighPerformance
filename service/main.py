@@ -11,10 +11,10 @@ from subprocess import Popen, PIPE, STDOUT
 from datetime import datetime
 from contextlib import closing
 
-SESSION_ID = 'eyJfcGVybWFuZW50Ijp0cnVlLCJzaWQiOnsiIGIiOiJNV0UxTjJabVlqQXlPV1ZsWlRsak5qY3dPVGs1TVRjMU9XTmpaakkyWTJZPSJ9fQ.Xy4TGQ.P2WH6csZ789j-uKatimxlbqG2C8'
+SESSION_ID = ''
 WORKER_ID = 'ae4re4tgr25UERqEt1Ac80Uq'
 BACKEND_URL = 'https://thvideo.tv'
-VERSION = 2
+VERSION = 3
 
 RESERVED_VIDEOS = []
 
