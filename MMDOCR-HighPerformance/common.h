@@ -185,7 +185,7 @@ inline std::string mil2str(std::size_t ms)
 	int hrs = minutes / 60;
 	int remain_minutes = minutes - hrs * 60;
 	char tmp[64];
-	std::sprintf(tmp, "%02d:%02d:%02d,%03d", hrs, remain_minutes, remain_sec, remain_ms);
+	std::sprintf(tmp, "%02d:%02d:%02d.%03d", hrs, remain_minutes, remain_sec, remain_ms);
 	return std::string(tmp);
 }
 

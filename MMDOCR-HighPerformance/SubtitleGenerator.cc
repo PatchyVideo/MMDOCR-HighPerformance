@@ -232,7 +232,7 @@ void SubtitleGenerator::Generate(std::string_view output_filename)
 	std::ofstream ofs(output_filename.data());
 	ofs << "WEBVTT\n\n";
 
-	std::size_t text_counter(1);
+	std::size_t text_counter(0);
 	for (auto const &seg : result)
 	{
 		if (seg.texts.size() == 0)
