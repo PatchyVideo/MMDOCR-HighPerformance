@@ -2,24 +2,25 @@
 #include <algorithm>
 #include <numeric>
 #include <fstream>
+#include <unordered_map>
 
 #include "utf_utils.h"
 #include "SubtitleGenerator.h"
 
-std::vector<char32_t> g_spaces;
+static std::vector<char32_t> g_spaces;
 
 void BuildSpaceCharacterU32()
 {
-	std::string const spaces(u8"◆◆●“””\"○●°•○○ ¤《》¡¿':.\n\r[] \t\v\f{}-_■=!+`~!@#$%^&*();'\", <> / ? \\ | －＞＜。，《》【】　？！￥…（）、：；·「」『』〔〕［］｛｝｟｠〉〈〖〗〘〙〚〛゠＝‥※＊〽〓〇＂“”‘’＃＄％＆＇＋．／＠＼＾＿｀｜～｡｢｣､･ｰﾟ￠￡￢￣￤￨￩￪￫￬￭￮・◆◊→←↑↓↔—'");
-	char32_t *tmp(new char32_t[spaces.size()]);
-	memset(tmp, 0, spaces.size());
+	std::string const spaces(u8"◆◆●●“””\"○●°•○○ ¤《》¡¿':.\n\r[] \t\v\f{}-_■=!+`~!@#$%^&*();'\", <> / ? \\ | －＞＜。，《》【】　？！￥…（）、：；·「」『』〔〕［］｛｝｟｠〉〈〖〗〘〙〚〛゠＝‥※＊〽〓〇＂“”‘’＃＄％＆＇＋．／＠＼＾＿｀｜～｡｢｣､･ｰﾟ￠￡￢￣￤￨￩￪￫￬￭￮・◆◊→←↑↓↔—'");
+	auto tmp(std::make_unique<char32_t[]>(spaces.size() + 2));
+	memset(tmp.get(), 0, spaces.size() + 2);
 
-	auto num_chars(uu::UtfUtils::SseConvert(reinterpret_cast<unsigned char const *>(&*spaces.cbegin()), reinterpret_cast<unsigned char const *>(&*spaces.cend()), tmp));
+	auto num_chars(uu::UtfUtils::SseConvert(reinterpret_cast<unsigned char const *>(spaces.data()), reinterpret_cast<unsigned char const *>(spaces.data() + spaces.size()), tmp.get() + 1));
 	if (num_chars <= 0)
 	{
 		throw std::runtime_error("utf8 read failed");
 	}
-	g_spaces = std::vector<char32_t>(tmp, tmp + num_chars);
+	g_spaces = std::vector<char32_t>(tmp.get(), tmp.get() + num_chars + 1);
 }
 
 std::vector<std::u32string> FilterSpaceOnlyString(std::vector<std::u32string> const &raw)

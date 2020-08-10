@@ -167,7 +167,8 @@ struct pair_hash
 
 		// Mainly for demonstration purposes, i.e. works but is overly simple
 		// In the real world, use sth. like boost.hash_combine
-		return h1 ^ h2;
+		h1 ^= h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2);
+		return h1;
 	}
 };
 
@@ -200,5 +201,19 @@ inline std::string ConvertU32toU8(std::u32string const &s)
 	auto ret = std::string(tmp, pos);
 	delete[] tmp;
 	return ret;
+}
+
+
+inline std::u32string ConvertU8toU32(std::string const& s)
+{
+	auto tmp(std::make_unique<char32_t[]>(s.size() + 1));
+	memset(tmp.get(), 0, s.size() + 1);
+
+	auto num_chars(uu::UtfUtils::SseConvert(reinterpret_cast<unsigned char const*>(s.data()), reinterpret_cast<unsigned char const*>(s.data() + s.size()), tmp.get()));
+	if (num_chars <= 0)
+	{
+		throw std::runtime_error("utf8 read failed");
+	}
+	return std::u32string(tmp.get(), tmp.get() + num_chars);
 }
 

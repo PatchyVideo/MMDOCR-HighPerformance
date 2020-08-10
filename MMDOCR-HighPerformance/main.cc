@@ -53,37 +53,6 @@ class Logger : public nvinfer1::ILogger
 	}
 } g_trtLogger;
 
-void test_ExtractChangedFrames()
-{
-	cudawrapper::CUDADeviceMemoryUnique<std::uint8_t> in_frames(32 * 3 * 640 * 384);
-	cudaMemset((void*)(in_frames), 0, 32 * 3 * 640 * 384);
-	cudaMemset((void*)(in_frames + 10 * 3 * 640 * 384), 255, 3 * 640 * 384);
-	cudawrapper::CUDADeviceMemoryUnique<std::uint8_t> out_frames;
-	cudawrapper::CUDADeviceMemoryUnique<std::uint32_t> tmp1;
-	cudawrapper::CUDADeviceMemoryUnique<std::int64_t> tmp2;
-	cudawrapper::CUDADeviceMemoryUnique<std::uint32_t> absdiffs_gpu;
-	cudawrapper::CUDAHostMemoryUnique<std::uint32_t> absdiffs_cpu;
-	std::vector<int64_t> frame_id_mapping;
-	std::int32_t batches;
-	ExtractChangedFrames(
-		in_frames,
-		out_frames,
-		tmp1,
-		absdiffs_gpu,
-		tmp2,
-		absdiffs_cpu,
-		frame_id_mapping,
-		batches,
-		0,
-		32,
-		640,
-		384,
-		8,
-		114514
-	);
-	__debugbreak();
-}
-
 struct FrameBuffer;
 struct WorkerThread;
 
@@ -329,7 +298,7 @@ struct WorkerThread
 	void mainloop() try
 	{
 		cudawrapper::NvInferEngine craft_engine(LoadEngineFromFile("detect.trt", trt_runtime));
-		cudawrapper::NvInferEngine ocr_engine(LoadEngineFromFile("ocr.trt", trt_runtime));
+		cudawrapper::NvInferEngine ocr_engine(LoadEngineFromFile("ocr-41k-top5.trt", trt_runtime));
 		cudawrapper::CUDAThreadContext context_scope(context);
 		cudawrapper::CUDAStream stream;
 		cudawrapper::CUDAEvent input_consumed;
@@ -372,7 +341,9 @@ struct WorkerThread
 		std::int32_t contiguous_text_regions_batches;
 
 		cudawrapper::CUDADeviceMemoryUnique<std::int32_t> ocr_text_indices_gpu;
+		cudawrapper::CUDADeviceMemoryUnique<float> ocr_text_probs_gpu;
 		cudawrapper::CUDAHostMemoryUnique<std::int32_t> ocr_text_indices;
+		cudawrapper::CUDAHostMemoryUnique<float> ocr_text_probs;
 
 		for (;;)
 		{
@@ -648,6 +619,8 @@ struct WorkerThread
 						ocr_batch_size,
 						stream
 					);
+
+					std::size_t const decode_k = 5;
 					
 					// step 7: run OCR
 					ocr_context.context->setOptimizationProfile(0);
@@ -655,13 +628,16 @@ struct WorkerThread
 					OCR(
 						contiguous_text_regions,
 						ocr_text_indices,
+						ocr_text_probs,
 						ocr_text_indices_gpu,
+						ocr_text_probs_gpu,
 						tmp_fp32_images,
 						ocr_context,
 						text_region_width,
 						32,
 						ocr_batch_size,
 						contiguous_text_regions_batches,
+						decode_k,
 						text_region_to_ocr.size(),
 						input_consumed,
 						stream
@@ -671,7 +647,7 @@ struct WorkerThread
 					//memset(ocr_text_indices, 0, ocr_text_indices.size_bytes());
 
 
-					auto ocr_result(CTCDecode(ocr_text_indices, text_region_to_ocr.size(), text_region_width / 4 + 1));
+					auto ocr_result(CTCDecode(ocr_text_indices, ocr_text_probs, text_region_to_ocr.size(), text_region_width / 4 + 1, decode_k));
 					//for (auto const& s : ocr_result) {
 					//	std::cout << ConvertU32toU8(s) << "\n";
 					//}
@@ -772,6 +748,8 @@ int main(int argc, char **argv)
 	cudawrapper::CUDAContext context(0, 0);
 
 	BuildAlphabet();
+	BuildSpaceCharacterU32();
+	BuildBigramProbs();
 
 	cudawrapper::NvInferRuntime trt_runtime(g_trtLogger);
 	//auto craft_engine(LoadEngineFromFile("detect.trt", trt_runtime.runtime));
@@ -996,8 +974,8 @@ int main(int argc, char **argv)
         
 		if (fps.Update(nFrameReturned))
 		{
-			std::sprintf(tmp, "fps=%.2f",fps.GetFPS());
-			std::cout << tmp << "\n";
+			std::sprintf(tmp, "fps=%.2f\n",fps.GetFPS());
+			std::cout << tmp;
 		}
 	} while (nVideoBytes);
 
