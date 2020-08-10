@@ -166,7 +166,7 @@ std::vector<std::pair<int, float>> list_source_vertices(std::vector<std::vector<
 	}
 }
 
-std::u32string DecodeCandidates(std::vector<std::vector<std::pair<char32_t, float>>> const& candidates, int k, float cost_scale = 1000.0f)
+std::u32string DecodeCandidates(std::vector<std::vector<std::pair<char32_t, float>>> const& candidates, std::int64_t k, float cost_scale = 1000.0f)
 {
 	if (candidates.size() == 0)
 		return {};
@@ -176,20 +176,20 @@ std::u32string DecodeCandidates(std::vector<std::vector<std::pair<char32_t, floa
 	// build graph
 	struct Edge
 	{
-		int from, to, capacity, cost;
-		Edge(int from, int to, int capacity, float cost) :from(from), to(to), capacity(capacity), cost(static_cast<int>(cost))
+		std::int64_t from, to, capacity, cost;
+		Edge(std::int64_t from, std::int64_t to, std::int64_t capacity, float cost) :from(from), to(to), capacity(capacity), cost(static_cast<std::int64_t>(cost))
 		{
 
 		}
 	};
 
-	int start_vertex_id(candidates.size() * k * 2);
-	int end_vertext_id(start_vertex_id + 1);
+	std::int64_t start_vertex_id(candidates.size() * k * 2);
+	std::int64_t end_vertext_id(start_vertex_id + 1);
 
 	std::vector<Edge> edges;
-	std::vector<std::vector<int>> next(end_vertext_id + 1);
+	std::vector<std::vector<std::int64_t>> next(end_vertext_id + 1);
 
-	int num_vertices(2);
+	std::int64_t num_vertices(2);
 
 	for (std::size_t u(0); u < candidates.front().size(); ++u)
 	{
@@ -200,9 +200,9 @@ std::u32string DecodeCandidates(std::vector<std::vector<std::pair<char32_t, floa
 		num_vertices += 2;
 	}
 
-	auto get_vertex_char([&candidates, k](int v) -> char32_t {
-		int col(v / (k * 2));
-		int row(v % (k * 2));
+	auto get_vertex_char([&candidates, k](std::int64_t v) -> char32_t {
+		std::int64_t col(v / (k * 2));
+		std::int64_t row(v % (k * 2));
 		row -= row & 1;
 		return candidates[col][row / 2].first;
 	});
@@ -236,21 +236,21 @@ std::u32string DecodeCandidates(std::vector<std::vector<std::pair<char32_t, floa
 	}
 
 	// step 2: run SSP
-	std::vector<std::vector<int>> adj, cost, capacity;
-	auto shortest_paths([&adj, &cost, &capacity](int n, int v0, std::vector<int>& d, std::vector<int>& p) {
-		d.assign(n, std::numeric_limits<int>::max());
+	std::vector<std::vector<std::int64_t>> adj, cost, capacity;
+	auto shortest_paths([&adj, &cost, &capacity](std::int64_t n, std::int64_t v0, std::vector<std::int64_t>& d, std::vector<std::int64_t>& p) {
+		d.assign(n, std::numeric_limits<std::int64_t>::max());
 		d[v0] = 0;
 		std::vector<char> inq(n, 0);
-		std::queue<int> q;
+		std::queue<std::int64_t> q;
 		q.push(v0);
 		p.assign(n, -1);
 
 		while (!q.empty())
 		{
-			int u = q.front();
+			std::int64_t u = q.front();
 			q.pop();
 			inq[u] = 0;
-			for (int v : adj[u])
+			for (std::int64_t v : adj[u])
 			{
 				if (capacity[u][v] > 0 && d[v] > d[u] + cost[u][v])
 				{
@@ -265,10 +265,10 @@ std::u32string DecodeCandidates(std::vector<std::vector<std::pair<char32_t, floa
 			}
 		}
 	});
-	auto min_cost_flow([&adj, &cost, &capacity, &shortest_paths](int N, std::vector<Edge> edges, int K, int s, int t) {
-		adj.assign(N, std::vector<int>());
-		cost.assign(N, std::vector<int>(N, 0));
-		capacity.assign(N, std::vector<int>(N, 0));
+	auto min_cost_flow([&adj, &cost, &capacity, &shortest_paths](std::int64_t N, std::vector<Edge> edges, std::int64_t K, std::int64_t s, std::int64_t t) -> std::int64_t {
+		adj.assign(N, std::vector<std::int64_t>());
+		cost.assign(N, std::vector<std::int64_t>(N, 0));
+		capacity.assign(N, std::vector<std::int64_t>(N, 0));
 		for (Edge e : edges)
 		{
 			adj[e.from].push_back(e.to);
@@ -278,18 +278,18 @@ std::u32string DecodeCandidates(std::vector<std::vector<std::pair<char32_t, floa
 			capacity[e.from][e.to] = e.capacity;
 		}
 
-		int flow = 0;
-		int cost = 0;
-		std::vector<int> d, p;
+		std::int64_t flow = 0;
+		std::int64_t cost = 0;
+		std::vector<std::int64_t> d, p;
 		while (flow < K)
 		{
 			shortest_paths(N, s, d, p);
-			if (d[t] == std::numeric_limits<int>::max())
+			if (d[t] == std::numeric_limits<std::int64_t>::max())
 				break;
 
 			// find max flow on that path
-			int f = K - flow;
-			int cur = t;
+			std::int64_t f = K - flow;
+			std::int64_t cur = t;
 			while (cur != s)
 			{
 				f = std::min(f, capacity[p[cur]][cur]);
@@ -317,7 +317,7 @@ std::u32string DecodeCandidates(std::vector<std::vector<std::pair<char32_t, floa
 
 	std::u32string result;
 
-	int cur(start_vertex_id);
+	std::int64_t cur(start_vertex_id);
 	while (next[cur].size())
 	{
 		bool found(false);
