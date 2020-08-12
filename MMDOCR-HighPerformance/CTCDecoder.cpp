@@ -40,16 +40,16 @@ void BuildAlphabet()
 
 void BuildBigramProbs()
 {
-	std::ifstream ifs("bigram_probs.txt");
+	std::ifstream ifs("bigram_probs_v2.txt");
 	if(ifs.bad() || ifs.fail())
-		throw std::runtime_error("failed to open bigram_probs.txt");
+		throw std::runtime_error("failed to open bigram_probs_v2.txt");
 	std::string char_pair; float prob;
 	while (ifs)
 	{
 		ifs >> char_pair >> prob;
 		std::u32string char_pair_u32(ConvertU8toU32(char_pair));
 		if (char_pair_u32.size() != 2)
-			throw std::runtime_error("corrupted bigram_probs.txt");
+			throw std::runtime_error("corrupted bigram_probs_v2.txt");
 		g_bigram_probs[{char_pair_u32[0], char_pair_u32[1]}] = prob;
 	}
 }
@@ -128,13 +128,15 @@ std::int32_t GetSpaceWidth(std::int32_t const *seq, std::size_t seq_len)
 	return static_cast<std::int32_t>(static_cast<float>(spcace_between_chars) / static_cast<float>(num_chars));
 }
 
+inline float negative_log_probability(float prob) { return -std::logf(prob); }
+
 inline float transition_negative_log_probability(char32_t a, char32_t b) // -logP(b|a)
 {
 	std::pair<char32_t, char32_t> item{ a, b };
 	if (g_bigram_probs.count(item))
-		return g_bigram_probs[item];
+		return negative_log_probability(g_bigram_probs[item]);
 	else
-		return 100000.0f;
+		return 10000000.0f;
 	//if (a == 0 || b == 0)
 	//	return 10000.0f;
 	//if (a == 'I' && b == '\'')
@@ -142,7 +144,6 @@ inline float transition_negative_log_probability(char32_t a, char32_t b) // -log
 	//return 10.0f;
 }
 
-inline float negative_log_probability(float prob) { return -std::logf(prob); }
 
 std::vector<std::pair<int, float>> list_source_vertices(std::vector<std::vector<std::pair<char32_t, float>>> const& candidates, int start_vertex_id, int j, std::size_t k)
 {
@@ -157,7 +158,7 @@ std::vector<std::pair<int, float>> list_source_vertices(std::vector<std::vector<
 			{
 				auto recursive_vertices(list_source_vertices(candidates, start_vertex_id, j - 1, k));
 				for (auto [ver_id, neglogprob] : recursive_vertices)
-					result.emplace_back(ver_id, neglogprob + candidates[j - 1][u].second);
+					result.emplace_back(ver_id, neglogprob + candidates[j - 1][u].second * 10.0f);
 			}
 			else
 				result.emplace_back((j - 1) * k * 2 + u * 2 + 1, 0);
@@ -403,35 +404,6 @@ std::vector<std::u32string> CTCDecode(
 	std::vector<std::u32string> result(num_imgs);
 	for (std::int64_t i(0); i < num_imgs; ++i)
 	{
-		//std::u32string cur_string;
-		//std::vector<std::int32_t> t(image_width);
-		//std::int32_t char_index(ocr_result.at_offset(image_width, i)[0]);
-		////auto space_width(GetSpaceWidth(ocr_result.at_offset(image_width, i), image_width));
-		//t[0] = char_index;
-		//if (char_index != 0)
-		//{
-		//	cur_string.append(1, g_alphabet[char_index]);
-		//}
-		//std::int32_t consecutive_zeros(0);
-		//for (std::size_t j(1); j < image_width; ++j)
-		//{
-		//	std::int32_t char_index(ocr_result.at_offset(image_width, i)[j]);
-		//	//cur_string.append(1, char_index!=0?g_alphabet[char_index]:' '); continue;
-		//	t[j] = char_index;
-		//	if (char_index != 0 && char_index != t[j - 1])
-		//	{
-		//		cur_string.append(1, g_alphabet[char_index]);
-		//		consecutive_zeros = 0;
-		//	}/* else if (char_index == 0)
-		//	{
-		//		++consecutive_zeros;
-		//		if (consecutive_zeros > space_width)
-		//		{
-		//			cur_string.append(1, ' ');
-		//			consecutive_zeros = 0;
-		//		}
-		//	}*/
-		//}
 		result[i] = DecodeSingleSentence(ocr_result_indices.at_offset(image_width * k, i), ocr_result_probs.at_offset(image_width * k, i), k, image_width);
 	}
 	return result;
