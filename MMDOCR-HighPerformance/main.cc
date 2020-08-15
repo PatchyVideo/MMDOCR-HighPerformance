@@ -298,7 +298,7 @@ struct WorkerThread
 	void mainloop() try
 	{
 		cudawrapper::NvInferEngine craft_engine(LoadEngineFromFile("detect.trt", trt_runtime));
-		cudawrapper::NvInferEngine ocr_engine(LoadEngineFromFile("ocr-41k-top5.trt", trt_runtime));
+		cudawrapper::NvInferEngine ocr_engine(LoadEngineFromFile("ocr-46k-top5.trt", trt_runtime));
 		cudawrapper::CUDAThreadContext context_scope(context);
 		cudawrapper::CUDAStream stream;
 		cudawrapper::CUDAEvent input_consumed;
@@ -394,7 +394,7 @@ struct WorkerThread
 				width,
 				height,
 				detector_batch_size,	// batch size for subsequence inference
-				width * height,			// threshold
+				width * height / 16,			// threshold
 				stream
 			);
 
@@ -482,7 +482,7 @@ struct WorkerThread
 				//}
 				//cv::imshow("scores", score_comb);
 				//cv::imshow("text regions", frame);
-				//cv::waitKey(1);
+				//cv::waitKey(10);
 			}
 
 			// step 5: extract text region from bboxes
@@ -749,7 +749,7 @@ int main(int argc, char **argv)
 
 	BuildAlphabet();
 	BuildSpaceCharacterU32();
-	BuildBigramProbs();
+	//BuildBigramProbs();
 
 	cudawrapper::NvInferRuntime trt_runtime(g_trtLogger);
 	//auto craft_engine(LoadEngineFromFile("detect.trt", trt_runtime.runtime));
