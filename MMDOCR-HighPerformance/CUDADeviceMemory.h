@@ -159,7 +159,7 @@ namespace cudawrapper
 			ptr = 0;
 		}
 
-		[[deprecated("please use explict copy")]]
+		[[deprecated("please use explicit copy")]]
 		CUDADeviceMemoryUnique(CUDADeviceMemoryUnique<T> const& other) :ptr(0), len(0)
 		{
 			if (!other.empty())
@@ -172,7 +172,7 @@ namespace cudawrapper
 			}
 		}
 
-		[[deprecated("please use explict copy")]]
+		[[deprecated("please use explicit copy")]]
 		CUDADeviceMemoryUnique& operator=(CUDADeviceMemoryUnique<T> const& other)
 		{
 			if (std::addressof(other) != this)

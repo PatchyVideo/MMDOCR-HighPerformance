@@ -16,7 +16,7 @@ namespace cudawrapper
 		{
 			return stream == nullptr;
 		}
-		// recommnad set flags CUstream_flags::CU_STREAM_NON_BLOCKING
+		// recommend set flags CUstream_flags::CU_STREAM_NON_BLOCKING
 		CUDAStream(std::uint32_t flags = CUstream_flags::CU_STREAM_NON_BLOCKING) :stream(nullptr), flags(flags)
 		{
 			ck2(cuStreamCreate(std::addressof(stream), flags));
