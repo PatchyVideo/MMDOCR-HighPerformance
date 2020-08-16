@@ -404,7 +404,7 @@ std::vector<std::u32string> CTCDecode(
 	std::vector<std::u32string> result(num_imgs);
 	for (std::int64_t i(0); i < num_imgs; ++i)
 	{
-		result[i] = DecodeSingleSentence(ocr_result_indices.at_offset(image_width * k, i), ocr_result_probs.at_offset(image_width * k, i), k, image_width);
+		result[i] = DecodeSingleSentenceTop1(ocr_result_indices.at_offset(image_width * k, i), ocr_result_probs.at_offset(image_width * k, i), k, image_width);
 	}
 	return result;
 }
