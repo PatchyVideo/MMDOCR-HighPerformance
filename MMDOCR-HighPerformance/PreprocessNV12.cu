@@ -113,7 +113,7 @@ __global__ void PreprocessNV12_stage_1_kernel(
 }
 
 // bilateral filter
-template <std::int32_t bilateral_ks = 11>
+template <std::int32_t bilateral_ks = 5>
 __global__ void PreprocessNV12_stage_2_kernel(
 	std::uint8_t* tmp,
 	std::uint8_t* rgb,
